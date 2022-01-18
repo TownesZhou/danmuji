@@ -1,0 +1,3 @@
+[submodule "bilibili-api"]
+	path = bilibili-api
+	url = git@github.com:TownesZhou/bilibili-api.git

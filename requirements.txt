@@ -1,0 +1,5 @@
+numpy
+PyQt5
+PyQt5-tools
+bilibili-api
+qasync

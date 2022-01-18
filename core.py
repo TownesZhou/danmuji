@@ -2,7 +2,7 @@
     Test getting live danmu from bilibili live room.
 """
 import asyncio
-from bilibili_api import live, sync
+from bilibili_api import live
 
 
 class Danmuku():
@@ -23,7 +23,7 @@ class Danmuku():
     def start_monitor(self, new_danmu_callback, room_id, paizi=None, keyword=None):
         print("Start monitoring!")
         assert callable(new_danmu_callback)
-        self.room = live.LiveDanmaku(room_id)
+        self.room = live.LiveDanmaku(room_id, debug=True)
 
         # Async function to record new danmu and report to callback
         @self.room.on('DANMU_MSG')
@@ -48,7 +48,7 @@ class Danmuku():
         print("Stop monitoring!")
         # Create another task to run disconnect() in the existing event loop
         self.stop_monitor_task = asyncio.create_task(self.room.disconnect())
-        
+
         # get result and Clear stats
         result = self.viewer_set
         self.num_danmu = 0

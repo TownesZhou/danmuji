@@ -23,7 +23,7 @@ class Danmuku():
     def start_monitor(self, new_danmu_callback, room_id, paizi=None, keyword=None):
         print("Start monitoring!")
         assert callable(new_danmu_callback)
-        self.room = live.LiveDanmaku(room_id, debug=True)
+        self.room = live.LiveDanmaku(room_id, debug=False)
 
         # Async function to record new danmu and report to callback
         @self.room.on('DANMU_MSG')

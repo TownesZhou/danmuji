@@ -2,7 +2,10 @@
     Danmuji main event logics
 """
 import asyncio
+import functools
 from traceback import format_exc
+
+import qasync
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QMessageBox, QMainWindow
@@ -104,14 +107,19 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_lottery.setText("开始统计")
 
 
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
+async def main():
+    def close_future(future, loop):
+        loop.call_later(10, future.cancel)
+        future.cancel()
 
-    # Setup application async event loop
-    loop = QEventLoop(app)
-    asyncio.set_event_loop(loop)
-    asyncio.events._set_running_loop(loop)
+    loop = asyncio.get_event_loop()
+    future = asyncio.Future()
+
+    app = QtWidgets.QApplication(sys.argv)
+    if hasattr(app, "aboutToQuit"):
+        getattr(app, "aboutToQuit").connect(
+            functools.partial(close_future, future, loop)
+        )
 
     # Setup main window and UI
     main_window = MainWindow()
@@ -120,7 +128,14 @@ if __name__ == "__main__":
     main_window.setup_ui(ui)
     main_window.show()
 
-    with loop:
-        loop.run_forever()
+    await future
+    return True
 
-    sys.exit(app.exec_())
+
+if __name__ == "__main__":
+    import sys
+
+    try:
+        qasync.run(main())
+    except asyncio.exceptions.CancelledError:
+        sys.exit(0)

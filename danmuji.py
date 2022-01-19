@@ -17,7 +17,7 @@ from core import Danmuku
 from ui import Ui_MainWindow
 
 
-VERSION = "v0.0.1"
+VERSION = "v0.0.2"
 
 LOTTERY_INTERVAL_MIN = 10
 LOTTERY_INTERVAL_MAX = 300

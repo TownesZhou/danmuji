@@ -20,7 +20,7 @@ class Danmuku():
         self.start_monitor_task, self.stop_monitor_task = None, None
         self.loop = None
 
-    def start_monitor(self, new_danmu_callback, room_id, paizi=None, keyword=None):
+    async def start_monitor(self, new_danmu_callback, room_id, paizi=None, keyword=None):
         print("Start monitoring!")
         assert callable(new_danmu_callback)
         self.room = live.LiveDanmaku(room_id, debug=False)
@@ -44,11 +44,12 @@ class Danmuku():
         # Create a new event loop in this thread and Create the coroutine task to run concurrently
         self.start_monitor_task = asyncio.create_task(self.room.connect())
 
-    def stop_monitor(self):
+    async def stop_monitor(self):
         print("Stop monitoring!")
         # Create another task to run disconnect() in the existing event loop
         self.stop_monitor_task = asyncio.create_task(self.room.disconnect())
-
+        # Wait for disconnection
+        await self.stop_monitor_task
         # get result and Clear stats
         result = self.viewer_set
         self.num_danmu = 0

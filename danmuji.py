@@ -1,7 +1,9 @@
-
+"""
+    Danmuji main event logics
+"""
 import asyncio
 from traceback import format_exc
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtWidgets
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QMessageBox, QMainWindow
 from PyQt5.QtCore import QCoreApplication
@@ -15,7 +17,7 @@ from ui import Ui_MainWindow
 VERSION = "v0.0.1"
 
 LOTTERY_INTERVAL_MIN = 10
-LOTTERY_INTERVAL_MAX = 250
+LOTTERY_INTERVAL_MAX = 500
 LOTTERY_INTERVAL_INC = 5
 
 
@@ -44,15 +46,14 @@ class MainWindow(QMainWindow):
         # room_id lineEdit only allow integer input
         self.ui.lineEdit_room_id.setValidator(self.onlyInt)
 
+    # === UI Event Logic ===
+
     # Main lottery button events
     def lottery_button_on_click(self):
         # Change button state/text and call corresponding function
         if self.ui.pushButton_lottery.text() == "开始统计":
-            # self.pushButton_lottery.setText("结束统计并抽奖")
-            self.start_monitor()
+            asyncio.create_task(self.start_monitor())
         else:
-            # self.pushButton_lottery.setText("开始统计")
-            # self.start_lottery()
             asyncio.create_task(self.start_lottery())
 
     # Function for updating the live danmu stats LCDNumber widgets
@@ -60,7 +61,7 @@ class MainWindow(QMainWindow):
         self.ui.lcdNumber_num_danmu.display(num_danmu)
         self.ui.lcdNumber_num_viewer.display(num_viewers)
 
-    def start_monitor(self):
+    async def start_monitor(self):
         """
         Start the live danmu monitoring
         """
@@ -78,7 +79,7 @@ class MainWindow(QMainWindow):
         keyword = self.ui.lineEdit_keyword.text().strip()
 
         try:
-            self.danmuku.start_monitor(self.update_lcd, room_id, paizi, keyword)
+            await self.danmuku.start_monitor(self.update_lcd, room_id, paizi, keyword)
         except Exception as e:
             QMessageBox.critical(self.main_window, "连接Bilibili直播服务时出现错误", format_exc())
 
@@ -90,10 +91,9 @@ class MainWindow(QMainWindow):
         Stop monitoring and start lottery
         """
         self.ui.pushButton_lottery.setEnabled(False)
-        candidates = list(self.danmuku.stop_monitor())
+        candidates = list(await self.danmuku.stop_monitor())
 
         # The lottery process visualization
-        # asyncio.create_task(self.roll_lottery_candidates(candidates))
         if len(candidates) > 0:
             for interval_ms in range(LOTTERY_INTERVAL_MIN, LOTTERY_INTERVAL_MAX, LOTTERY_INTERVAL_INC):
                 self.ui.textBrowser_lottery_result.setText(np.random.choice(candidates))
@@ -102,10 +102,6 @@ class MainWindow(QMainWindow):
         # Change button name at the end
         self.ui.pushButton_lottery.setEnabled(True)
         self.ui.pushButton_lottery.setText("开始统计")
-
-    # Slot method for showing the lottery process
-    def lottery_process(self, viewer_set):
-        print(f"DEBUG: lottery_process started! Received viewer set: {viewer_set}")
 
 
 if __name__ == "__main__":

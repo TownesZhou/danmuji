@@ -7,7 +7,7 @@ from traceback import format_exc
 
 import qasync
 from PyQt5 import QtWidgets
-from PyQt5.QtGui import QIntValidator
+from PyQt5.QtGui import QIntValidator, QColor
 from PyQt5.QtWidgets import QMessageBox, QMainWindow
 from PyQt5.QtCore import QCoreApplication
 from qasync import QEventLoop
@@ -20,7 +20,7 @@ from ui import Ui_MainWindow
 VERSION = "v0.0.1"
 
 LOTTERY_INTERVAL_MIN = 10
-LOTTERY_INTERVAL_MAX = 500
+LOTTERY_INTERVAL_MAX = 300
 LOTTERY_INTERVAL_INC = 5
 
 
@@ -101,6 +101,11 @@ class MainWindow(QMainWindow):
             for interval_ms in range(LOTTERY_INTERVAL_MIN, LOTTERY_INTERVAL_MAX, LOTTERY_INTERVAL_INC):
                 self.ui.textBrowser_lottery_result.setText(np.random.choice(candidates))
                 await asyncio.sleep(interval_ms / 1000)
+
+        # Make the winner red
+        self.ui.textBrowser_lottery_result.setText(
+            '<p style="color: red">' + np.random.choice(candidates) + '</p>'
+        )
 
         # Change button name at the end
         self.ui.pushButton_lottery.setEnabled(True)

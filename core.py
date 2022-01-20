@@ -16,7 +16,7 @@ class Danmuku():
         # Internal states
         self.room = None
         self.num_danmu = 0
-        self.viewer_set = set()
+        self.viewer_list = []
         self.start_monitor_task, self.stop_monitor_task = None, None
         self.loop = None
 
@@ -36,10 +36,10 @@ class Danmuku():
             # Decide to record or not
             if (not paizi or paizi == tag_name) and (not keyword or keyword in msg):
                 self.num_danmu += 1
-                self.viewer_set.add(viewer_name)
+                if viewer_name not in self.viewer_list:
+                    self.viewer_list.append(viewer_name)
                 print(f"Reporting danmu -- msg: {msg}, viewer_name: {viewer_name}")
-                # stats_report_func(self.num_danmu, len(self.viewer_set))
-                new_danmu_callback(self.num_danmu, len(self.viewer_set))
+                new_danmu_callback(self.num_danmu, self.viewer_list)
 
         # Create a new event loop in this thread and Create the coroutine task to run concurrently
         self.start_monitor_task = asyncio.create_task(self.room.connect())
@@ -51,9 +51,9 @@ class Danmuku():
         # Wait for disconnection
         await self.stop_monitor_task
         # get result and Clear stats
-        result = self.viewer_set
+        result = self.viewer_list
         self.num_danmu = 0
-        self.viewer_set = set()
+        self.viewer_list = []
         return result
 
 
@@ -64,6 +64,6 @@ if __name__ == "__main__":
 
     def stats_report_func(num_danmu, num_viewers):
         print(f"Num danmu: {num_danmu}, num_viewers: {num_viewers}")
-        print(f"Total view list: {list(danmuku.viewer_set)}")
+        print(f"Total view list: {list(danmuku.viewer_list)}")
 
     danmuku.start_monitor(stats_report_func, room_id)

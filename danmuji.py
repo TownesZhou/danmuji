@@ -7,7 +7,7 @@ from traceback import format_exc
 
 import qasync
 from PyQt5 import QtWidgets
-from PyQt5.QtGui import QIntValidator, QColor
+from PyQt5.QtGui import QIntValidator, QIcon
 from PyQt5.QtWidgets import QMessageBox, QMainWindow
 from PyQt5.QtCore import QCoreApplication, Qt
 from qasync import QEventLoop
@@ -22,6 +22,7 @@ QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)      # use hi
 
 
 VERSION = "v0.0.3"
+ICON_PATH = 'asset/icon.ico'
 
 LOTTERY_INTERVAL_MIN = 10
 LOTTERY_INTERVAL_MAX = 300
@@ -40,6 +41,9 @@ class MainWindow(QMainWindow):
     def setup_ui(self, ui_main_window):
         self.ui = ui_main_window
         # More adjustments on UI
+        # Set icon
+        self.setWindowIcon(QIcon(ICON_PATH))
+        # Set window title
         self.setWindowTitle(QCoreApplication.translate("MainWindow", "Bilibili 弹幕抽奖姬 " + VERSION))
         # Setup widget signal and slots
         # Enable/disable danmu filter lineEdit widget when the corresponding checkbox state changes
@@ -63,17 +67,24 @@ class MainWindow(QMainWindow):
         else:
             asyncio.create_task(self.start_lottery())
 
-    # Function for updating the live danmu stats LCDNumber widgets
-    def update_lcd(self, num_danmu, num_viewers):
+    # Update monitor displays when new danmu arrives
+    def update_monitor(self, num_danmu, viewer_list):
         self.ui.lcdNumber_num_danmu.display(num_danmu)
-        self.ui.lcdNumber_num_viewer.display(num_viewers)
+        self.ui.lcdNumber_num_viewer.display(len(viewer_list))
+        self.ui.textBrowser_viewers.setText('\n'.join(viewer_list))
+
+    # Reset monitor displays to 0
+    def reset_monitor(self):
+        self.ui.lcdNumber_num_danmu.display(0)
+        self.ui.lcdNumber_num_viewer.display(0)
+        self.ui.textBrowser_viewers.setText('')
 
     async def start_monitor(self):
         """
         Start the live danmu monitoring
         """
         # Rest previous output
-        self.update_lcd(0, 0)  # Clear LCD
+        self.reset_monitor()  # Clear LCD
         self.ui.textBrowser_lottery_result.setText('')  # Clear text display
         # Get input
         # Make sure room_id contains something
@@ -87,7 +98,7 @@ class MainWindow(QMainWindow):
 
         try:
             await self.danmuku.start_monitor(
-                self.update_lcd,
+                self.update_monitor,
                 room_id,
                 paizi if self.ui.checkBox_paizi.isChecked() else None,
                 keyword if self.ui.checkBox_keyword.isChecked() else None
@@ -103,7 +114,7 @@ class MainWindow(QMainWindow):
         Stop monitoring and start lottery
         """
         self.ui.pushButton_lottery.setEnabled(False)
-        candidates = list(await self.danmuku.stop_monitor())
+        candidates = await self.danmuku.stop_monitor()
 
         # The lottery process visualization
         if len(candidates) > 0:
@@ -134,6 +145,9 @@ async def main():
         getattr(app, "aboutToQuit").connect(
             functools.partial(close_future, future, loop)
         )
+
+    # Set style
+    app.setStyle('Breeze')
 
     # Setup main window and UI
     main_window = MainWindow()

@@ -7,7 +7,7 @@ from traceback import format_exc
 
 import qasync
 from PyQt5 import QtWidgets
-from PyQt5.QtGui import QIntValidator, QIcon
+from PyQt5.QtGui import QIntValidator, QIcon, QTextCursor
 from PyQt5.QtWidgets import QMessageBox, QMainWindow
 from PyQt5.QtCore import QCoreApplication, Qt
 from qasync import QEventLoop
@@ -76,6 +76,8 @@ class MainWindow(QMainWindow):
         self.ui.lcdNumber_num_danmu.display(num_danmu)
         self.ui.lcdNumber_num_viewer.display(len(viewer_list))
         self.ui.textBrowser_viewers.setText('\n'.join(viewer_list))
+        self.ui.textBrowser_viewers.moveCursor(QTextCursor.End)
+        self.ui.textBrowser_viewers.ensureCursorVisible()
 
     # Reset monitor displays to 0
     def reset_monitor(self):
@@ -107,21 +109,23 @@ class MainWindow(QMainWindow):
         paizi = self.ui.lineEdit_paizi.text().strip()
         keyword = self.ui.lineEdit_keyword.text().strip()
 
-        # Get room info and alert if the room is not live
-        room_title, anchor_name, live_status = await self.danmuku.get_room_info(room_id)
-        if not live_status:
-            QMessageBox.warning(self, "直播未开始", f"房间{room_id}的直播尚未开始！")
-        self.update_room_info(room_title, anchor_name)
-
         try:
+            # Get room info and alert if the room is not live
+            room_title, anchor_name, live_status = await self.danmuku.get_room_info(room_id)
+            if not live_status:
+                QMessageBox.warning(self, "直播未开始", f"房间{room_id}的直播尚未开始！")
+            self.update_room_info(room_title, anchor_name)
+
+            # Monitor live danmu
             await self.danmuku.start_monitor(
                 self.update_monitor,
                 room_id,
                 paizi if self.ui.checkBox_paizi.isChecked() else None,
                 keyword if self.ui.checkBox_keyword.isChecked() else None
             )
-        except Exception:
-            QMessageBox.critical(self.main_window, "连接Bilibili直播服务时出现错误", format_exc())
+        except Exception as e:
+            QMessageBox.critical(self, "连接Bilibili直播服务时出现错误", str(e))
+            return
 
         # Change button caption at the end
         self.ui.pushButton_lottery.setText("结束统计并抽奖")
@@ -139,10 +143,10 @@ class MainWindow(QMainWindow):
                 self.ui.textBrowser_lottery_result.setText(np.random.choice(candidates))
                 await asyncio.sleep(interval_ms / 1000)
 
-        # Make the winner red
-        self.ui.textBrowser_lottery_result.setText(
-            '<p style="color: red">' + np.random.choice(candidates) + '</p>'
-        )
+            # Make the winner red
+            self.ui.textBrowser_lottery_result.setText(
+                '<p style="color: red">' + np.random.choice(candidates) + '</p>'
+            )
 
         # Change button name at the end
         self.ui.pushButton_lottery.setEnabled(True)

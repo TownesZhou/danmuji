@@ -23,6 +23,8 @@ QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)      # use hi
 
 VERSION = "v0.0.3"
 ICON_PATH = 'asset/icon.ico'
+WINDOW_MIN_WIDTH = 420
+WINDOW_MIN_HEIGHT = 650
 
 LOTTERY_INTERVAL_MIN = 10
 LOTTERY_INTERVAL_MAX = 300
@@ -41,10 +43,12 @@ class MainWindow(QMainWindow):
     def setup_ui(self, ui_main_window):
         self.ui = ui_main_window
         # More adjustments on UI
-        # Set icon
+        # Icon
         self.setWindowIcon(QIcon(ICON_PATH))
-        # Set window title
+        # Window title
         self.setWindowTitle(QCoreApplication.translate("MainWindow", "Bilibili 弹幕抽奖姬 " + VERSION))
+        # Minimal window size
+        self.setMinimumSize(WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT)
         # Setup widget signal and slots
         # Enable/disable danmu filter lineEdit widget when the corresponding checkbox state changes
         self.ui.checkBox_paizi.toggled.connect(
@@ -90,7 +94,7 @@ class MainWindow(QMainWindow):
         # Make sure room_id contains something
         room_id = self.ui.lineEdit_room_id.text()
         if not room_id:
-            QMessageBox.critical(self.main_window, "输入错误", "请填写Bilibili直播间房间号！")
+            QMessageBox.critical(self, "输入错误", "请填写Bilibili直播间房间号！")
             return
         room_id = int(room_id)
         paizi = self.ui.lineEdit_paizi.text().strip()
@@ -147,7 +151,7 @@ async def main():
         )
 
     # Set style
-    app.setStyle('Breeze')
+    app.setStyle('Fusion')
 
     # Setup main window and UI
     main_window = MainWindow()

@@ -18,6 +18,7 @@
   </property>
   <property name="font">
    <font>
+    <family>Microsoft YaHei UI</family>
     <pointsize>10</pointsize>
    </font>
   </property>

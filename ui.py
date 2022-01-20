@@ -21,6 +21,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
         MainWindow.setSizePolicy(sizePolicy)
         font = QtGui.QFont()
+        font.setFamily("Microsoft YaHei UI")
         font.setPointSize(10)
         MainWindow.setFont(font)
         self.centralwidget = QtWidgets.QWidget(MainWindow)

@@ -17,7 +17,7 @@ from core import Danmuku
 from ui import Ui_MainWindow
 
 
-VERSION = "v0.0.2"
+VERSION = "v0.0.3"
 
 LOTTERY_INTERVAL_MIN = 10
 LOTTERY_INTERVAL_MAX = 300
@@ -82,8 +82,13 @@ class MainWindow(QMainWindow):
         keyword = self.ui.lineEdit_keyword.text().strip()
 
         try:
-            await self.danmuku.start_monitor(self.update_lcd, room_id, paizi, keyword)
-        except Exception as e:
+            await self.danmuku.start_monitor(
+                self.update_lcd,
+                room_id,
+                paizi if self.ui.checkBox_paizi.isChecked() else None,
+                keyword if self.ui.checkBox_keyword.isChecked() else None
+            )
+        except Exception:
             QMessageBox.critical(self.main_window, "连接Bilibili直播服务时出现错误", format_exc())
 
         # Change button caption at the end

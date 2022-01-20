@@ -9,12 +9,16 @@ import qasync
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QIntValidator, QColor
 from PyQt5.QtWidgets import QMessageBox, QMainWindow
-from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtCore import QCoreApplication, Qt
 from qasync import QEventLoop
 import numpy as np
 
 from core import Danmuku
 from ui import Ui_MainWindow
+
+
+QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)   # enable highdpi scaling
+QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)      # use highdpi icons
 
 
 VERSION = "v0.0.3"

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui\design4.ui'
+# Form implementation generated from reading ui file 'ui\design5.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(415, 652)
+        MainWindow.resize(378, 664)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -42,22 +42,28 @@ class Ui_MainWindow(object):
         self.groupBox_2 = QtWidgets.QGroupBox(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(1)
+        sizePolicy.setVerticalStretch(3)
         sizePolicy.setHeightForWidth(self.groupBox_2.sizePolicy().hasHeightForWidth())
         self.groupBox_2.setSizePolicy(sizePolicy)
         self.groupBox_2.setTitle("")
         self.groupBox_2.setObjectName("groupBox_2")
         self.label = QtWidgets.QLabel(self.groupBox_2)
-        self.label.setGeometry(QtCore.QRect(10, 20, 51, 21))
+        self.label.setGeometry(QtCore.QRect(10, 10, 51, 21))
         self.label.setObjectName("label")
         self.lineEdit_room_id = QtWidgets.QLineEdit(self.groupBox_2)
-        self.lineEdit_room_id.setGeometry(QtCore.QRect(160, 20, 131, 20))
+        self.lineEdit_room_id.setGeometry(QtCore.QRect(160, 10, 131, 20))
         self.lineEdit_room_id.setObjectName("lineEdit_room_id")
+        self.label_room_name = QtWidgets.QLabel(self.groupBox_2)
+        self.label_room_name.setGeometry(QtCore.QRect(10, 40, 91, 16))
+        self.label_room_name.setObjectName("label_room_name")
+        self.label_anchor_name = QtWidgets.QLabel(self.groupBox_2)
+        self.label_anchor_name.setGeometry(QtCore.QRect(10, 60, 91, 16))
+        self.label_anchor_name.setObjectName("label_anchor_name")
         self.verticalLayout.addWidget(self.groupBox_2)
         self.groupBox = QtWidgets.QGroupBox(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(2)
+        sizePolicy.setVerticalStretch(3)
         sizePolicy.setHeightForWidth(self.groupBox.sizePolicy().hasHeightForWidth())
         self.groupBox.setSizePolicy(sizePolicy)
         self.groupBox.setObjectName("groupBox")
@@ -113,7 +119,7 @@ class Ui_MainWindow(object):
         self.textBrowser_viewers = QtWidgets.QTextBrowser(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(5)
+        sizePolicy.setVerticalStretch(3)
         sizePolicy.setHeightForWidth(self.textBrowser_viewers.sizePolicy().hasHeightForWidth())
         self.textBrowser_viewers.setSizePolicy(sizePolicy)
         self.textBrowser_viewers.setObjectName("textBrowser_viewers")
@@ -173,6 +179,9 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(4)
         sizePolicy.setHeightForWidth(self.textBrowser_lottery_result.sizePolicy().hasHeightForWidth())
         self.textBrowser_lottery_result.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setPointSize(20)
+        self.textBrowser_lottery_result.setFont(font)
         self.textBrowser_lottery_result.setObjectName("textBrowser_lottery_result")
         self.verticalLayout_2.addWidget(self.textBrowser_lottery_result)
         self.label_4 = QtWidgets.QLabel(self.centralwidget)
@@ -197,6 +206,8 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Bilibili 弹幕抽奖姬"))
         self.label.setText(_translate("MainWindow", "房间号："))
+        self.label_room_name.setText(_translate("MainWindow", "房间名称："))
+        self.label_anchor_name.setText(_translate("MainWindow", "主播："))
         self.groupBox.setTitle(_translate("MainWindow", "弹幕筛选"))
         self.checkBox_paizi.setText(_translate("MainWindow", "带牌子："))
         self.checkBox_keyword.setText(_translate("MainWindow", "包含以下关键词："))

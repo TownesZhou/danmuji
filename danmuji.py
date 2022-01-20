@@ -24,7 +24,7 @@ QtWidgets.QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)      # use hi
 VERSION = "v0.0.3"
 ICON_PATH = 'asset/icon.ico'
 WINDOW_MIN_WIDTH = 420
-WINDOW_MIN_HEIGHT = 650
+WINDOW_MIN_HEIGHT = 700
 
 LOTTERY_INTERVAL_MIN = 10
 LOTTERY_INTERVAL_MAX = 300
@@ -83,6 +83,13 @@ class MainWindow(QMainWindow):
         self.ui.lcdNumber_num_viewer.display(0)
         self.ui.textBrowser_viewers.setText('')
 
+    # Update room info display
+    def update_room_info(self, room_title, anchor_name):
+        self.ui.label_room_name.setText("直播间标题：\t" + room_title)
+        self.ui.label_anchor_name.setText("主播：\t\t" + anchor_name)
+        self.ui.label_room_name.adjustSize()
+        self.ui.label_anchor_name.adjustSize()
+
     async def start_monitor(self):
         """
         Start the live danmu monitoring
@@ -99,6 +106,12 @@ class MainWindow(QMainWindow):
         room_id = int(room_id)
         paizi = self.ui.lineEdit_paizi.text().strip()
         keyword = self.ui.lineEdit_keyword.text().strip()
+
+        # Get room info and alert if the room is not live
+        room_title, anchor_name, live_status = await self.danmuku.get_room_info(room_id)
+        if not live_status:
+            QMessageBox.warning(self, "直播未开始", f"房间{room_id}的直播尚未开始！")
+        self.update_room_info(room_title, anchor_name)
 
         try:
             await self.danmuku.start_monitor(

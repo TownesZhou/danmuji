@@ -2,7 +2,7 @@
     Test getting live danmu from bilibili live room.
 """
 import asyncio
-from bilibili_api import live
+from bilibili_api import live, sync
 
 
 class Danmuku():
@@ -19,6 +19,15 @@ class Danmuku():
         self.viewer_list = []
         self.start_monitor_task, self.stop_monitor_task = None, None
         self.loop = None
+
+    async def get_room_info(self, room_id):
+        """
+        Returns room title, anchor name, live status
+        """
+        room_info = await live.LiveRoom(room_id).get_room_info()
+        return room_info['room_info']['title'], \
+               room_info['anchor_info']['base_info']['uname'], \
+               room_info['room_info']['live_status']
 
     async def start_monitor(self, new_danmu_callback, room_id, paizi=None, keyword=None):
         print("Start monitoring!")
@@ -59,11 +68,17 @@ class Danmuku():
 
 # === DEBUG ONLY ===
 if __name__ == "__main__":
-    room_id = 21603945
-    danmuku = Danmuku()
+    room_id = 23676151
+    live_room = live.LiveRoom(room_id)
 
-    def stats_report_func(num_danmu, num_viewers):
-        print(f"Num danmu: {num_danmu}, num_viewers: {num_viewers}")
-        print(f"Total view list: {list(danmuku.viewer_list)}")
+    # def stats_report_func(num_danmu, num_viewers):
+    #     print(f"Num danmu: {num_danmu}, num_viewers: {num_viewers}")
+    #     print(f"Total view list: {list(danmuku.viewer_list)}")
+    #
+    # danmuku.start_monitor(stats_report_func, room_id)
 
-    danmuku.start_monitor(stats_report_func, room_id)
+    # print(sync(live_room.get_room_info()))
+
+    result = sync(live_room.get_room_info())
+    print(result['room_info']['title'])
+    print(result['anchor_info']['base_info']['uname'])
